@@ -283,12 +283,28 @@ function isClear(side) {
 				break;
 
 				case 'rotation': // Checa se é possível girar no sentido horário.
-					if (newBlock.shape[i][j] != 0 && board[newBlock.size-j-1+newBlock.y][i+newBlock.x+1] != 0)
+					if (board[i+newBlock.y][j+newBlock.x+1] != 0 && newBlock.shape[newBlock.size-j-1][i] != 0)
 						return false;
 				break;
 			}
 		}
 	return true;	
+}
+
+// A função abaixo checa constantemente se alguma linha está preenchida.
+// Se sim, ela remove aquela linha e adiciona uma nova no começo do tabuleiro. 
+
+function rowCheck () {
+	for (var i = 0; i < board.length-1; i++)
+		for (var j = 0; j < board[0].length; j++) {
+			if (board[i][j] == 0)
+				break;
+			else
+				if (j == 11) {
+					board.splice(i, 1);
+					board.unshift([1,0,0,0,0,0,0,0,0,0,0,1]);
+				}
+		}
 }
 
 // A função abaixo é ativada somente a cada refreshTime, e somente se o bloco
@@ -316,6 +332,7 @@ function draw() {
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	timeNow = Date.now(); // Define o tempo a todo momento
+	rowCheck();
 	drawBoard();
 	drawBlock();
 	if (timeNow - timeLast > refreshTime) { // Move o bloco se o tempo de atualizar for atingido
