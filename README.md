@@ -1,4 +1,4 @@
-# tetris
+# Tetris
 
 A ideia desse pequeno projeto é tentar replicar o jogo Tetris da maneira mais simples e intuitiva que eu conseguir pensar, tentando bolar o raciocínio lógico do desenvolvimento por conta própria, e só recorrer a algum auxílio ou função mais elaborada quando estritamente necessário.
 
