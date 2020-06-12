@@ -394,7 +394,9 @@ let touchstartY = 0;
 let touchendX = 0;
 let touchendY = 0;
 
-
+document.addEventListener('touchmove', function(event) {
+	event.preventDefault();
+}, false);
 
 document.addEventListener('touchstart', function(event) {
 	event.preventDefault();
