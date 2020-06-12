@@ -160,6 +160,7 @@ function restart() {
 				[1,0,0,0,0,0,0,0,0,0,0,1],
 				[1,1,1,1,1,1,1,1,1,1,1,1]];
 
+	refreshTime = 1000;
 	fillNewBlock(selectRandomBlock());
 }
 
@@ -229,8 +230,8 @@ function drawBoard() {
 // Essa função só é ativada pelas teclas do teclado e confere ao bloco
 // os movimentos de translação e rotação.
 
-function updateBlock(event) {
-	switch (event.keyCode) {
+function updateBlock(movement) {
+	switch (movement) {
 		case 37: // Move o bloco para a esquerda.
 				if (isClear('left'))
 					newBlock.x--;
@@ -252,6 +253,9 @@ function updateBlock(event) {
 						for (var j = 0; j < newBlock.size; j++)
 							newBlock.shadow[i][j] = newBlock.shape[i][j]; // Faz o shadow do bloco acompanha-lo para facilitar a rotação. (Realmente necessário?)
 				}
+			break;
+		case 32:
+				refreshTime = 1;
 			break;
 	}
 }
@@ -319,6 +323,7 @@ function update() {
 			for (var j = 0; j < newBlock.size; j++)
 					if (newBlock.shape[i][j] != 0)
 						board[i+newBlock.y][j+newBlock.x+1] = newBlock.shape[i][j];
+		refreshTime = 1000;
 		fillNewBlock(selectRandomBlock());
 	}
 	else 
@@ -340,7 +345,7 @@ function draw() {
 			newBlock.y += newBlock.dy;
 		else
 			update();
-		timeLast = Date.now(); // "Reseta" o tempo da última atualização
+		timeLast = Date.now(); // "Reseta" o tempo da última atualização.
 	}
 	requestAnimationFrame(draw);
 }
@@ -348,5 +353,55 @@ restart();
 requestAnimationFrame(draw);
 
 // O EventListener a seguir vai checar 
-// constantemente as teclas pressionadas
-document.addEventListener('keydown', updateBlock);
+// constantemente as teclas pressionadas.
+
+document.addEventListener('keydown', function(event) {
+	console.log(event);
+	updateBlock(event.keyCode);
+});
+
+// A parte abaixo trata de gestos touch. A maior parte do código
+// eu imortei de um repositório no github, mas ainda precisei
+// fazer algumas adaptações.
+
+let touchstartX = 0;
+let touchstartY = 0;
+let touchendX = 0;
+let touchendY = 0;
+
+
+
+document.addEventListener('touchstart', function(event) {
+	event.preventDefault();
+    touchstartX = event.changedTouches[0].screenX;
+    touchstartY = event.changedTouches[0].screenY;
+}, false);
+
+document.addEventListener('touchend', function(event) {
+	event.preventDefault();
+    touchendX = event.changedTouches[0].screenX;
+    touchendY = event.changedTouches[0].screenY;
+    handleGesture();
+}, false); 
+
+function handleGesture() {
+    if (touchendX < touchstartX && (Math.abs(touchstartX - touchendX)) > (Math.abs(touchstartY - touchendY))) {
+        updateBlock(37); // Esquerda
+    }
+    
+    if (touchendX > touchstartX && (Math.abs(touchstartX - touchendX)) > (Math.abs(touchstartY - touchendY))) {
+        updateBlock(39); // Direita
+    }
+    
+    if (touchendY < touchstartY && (Math.abs(touchstartX - touchendX)) < (Math.abs(touchstartY - touchendY))) {
+        console.log('Swiped up'); // Cima
+    }
+    
+    if (touchendY > touchstartY && (Math.abs(touchstartX - touchendX)) < (Math.abs(touchstartY - touchendY))) {
+       updateBlock(32); // Baixo
+    }
+    
+    if (touchendY === touchstartY) {
+       updateBlock(38); // Toque
+    }
+}
