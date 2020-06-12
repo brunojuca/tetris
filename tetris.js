@@ -6,7 +6,22 @@
 
 var canvas = document.getElementById("GameCanvas");
 var ctx = canvas.getContext("2d");
-ctx.scale(30,30); // Considera o tabuleiro como 10x20 px.
+
+function arredonda20(n) { // Função para arredondar o tamanho do canvas e ficar com gráfico ok.
+	n = n-20;
+	while (n % 20 != 0)
+		n--;
+	return n;
+}
+
+canvas.height = arredonda20(window.innerHeight);
+alert(canvas.height);
+canvas.width = canvas.height/2;
+
+ctx.scale(canvas.width/10,canvas.width/10); // Considera o tabuleiro como 10x20 px.
+
+var bs = 0.03; //border size.
+var bc = '#dddddd' //border color.
 
 var timeLast = Date.now(), timeNow, refreshTime = 1000; // Controle do tempo de atualização (ms).
 
@@ -170,11 +185,17 @@ function restart() {
 function drawBlock() {
 
 	ctx.beginPath();
-	ctx.fillStyle = newBlock.color;
 	for (var i = 0; i < newBlock.size; i++) {
 		for (var j = 0; j < newBlock.size; j++) {
 			if (newBlock.shape[i][j] != 0) {
+				ctx.fillStyle = newBlock.color;
 				ctx.fillRect(newBlock.x+j, newBlock.y+i, 1, 1);
+
+				ctx.fillStyle = bc; // Desenha a borda dos blocos.
+				ctx.fillRect(newBlock.x+j, newBlock.y+i, bs, 1);
+				ctx.fillRect(newBlock.x+j, newBlock.y+i, 1, bs);
+				ctx.fillRect(newBlock.x+j+1-bs, newBlock.y+i, bs, 1);
+				ctx.fillRect(newBlock.x+j, newBlock.y+i+1-bs, 1, bs);
 			}
 		}
 	}
@@ -191,8 +212,8 @@ function drawBlock() {
 function drawBoard() {
 
 	ctx.beginPath();
-	for (var i = 0; i < 20; i++) {
-		for (var j = 1; j < 11; j++) {
+	for (var i = 0; i < 21; i++) {
+		for (var j = 0; j < 12; j++) {
 			if (board[i][j] == 1) {
 				ctx.fillStyle = blockO.color;
 				ctx.fillRect(j-1, i, 1, 1);
@@ -221,6 +242,12 @@ function drawBoard() {
 				ctx.fillStyle = blockI.color
 				ctx.fillRect(j-1, i, 1, 1);
 			}
+
+			ctx.fillStyle = bc; // Desenha a borda dos blocos.
+			ctx.fillRect(j-1, i, bs, 1);
+			ctx.fillRect(j-1, i, 1, bs);
+			ctx.fillRect(j-1+1-bs, i, bs, 1);
+			ctx.fillRect(j-1, i+1-bs, 1, bs);
 		}
 	}
 	ctx.closePath();
@@ -356,7 +383,6 @@ requestAnimationFrame(draw);
 // constantemente as teclas pressionadas.
 
 document.addEventListener('keydown', function(event) {
-	console.log(event);
 	updateBlock(event.keyCode);
 });
 
