@@ -15,7 +15,6 @@ function arredonda20(n) { // Função para arredondar o tamanho do canvas e fica
 }
 
 canvas.height = arredonda20(window.innerHeight);
-alert(canvas.height);
 canvas.width = canvas.height/2;
 
 ctx.scale(canvas.width/10,canvas.width/10); // Considera o tabuleiro como 10x20 px.
