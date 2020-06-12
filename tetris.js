@@ -396,20 +396,20 @@ let touchendY = 0;
 
 document.addEventListener('touchmove', function(event) {
 	event.preventDefault();
-}, false);
+}, false, { passive: false });
 
 document.addEventListener('touchstart', function(event) {
 	event.preventDefault();
     touchstartX = event.changedTouches[0].screenX;
     touchstartY = event.changedTouches[0].screenY;
-}, false);
+}, false, { passive: false });
 
 document.addEventListener('touchend', function(event) {
 	event.preventDefault();
     touchendX = event.changedTouches[0].screenX;
     touchendY = event.changedTouches[0].screenY;
     handleGesture();
-}, false); 
+}, false, { passive: false }); 
 
 function handleGesture() {
     if (touchendX < touchstartX && (Math.abs(touchstartX - touchendX)) > (Math.abs(touchstartY - touchendY))) {
