@@ -22,6 +22,9 @@ ctx.scale(canvas.width/10,canvas.width/10); // Considera o tabuleiro como 10x20 
 var bs = 0.03; //border size.
 var bc = '#dddddd' //border color.
 
+var score = 0;
+var pointValue = 10; 
+
 var timeLast = Date.now(), timeNow, refreshTime = 1000; // Controle do tempo de atualização (ms).
 
 var board;
@@ -175,8 +178,22 @@ function restart() {
 				[1,1,1,1,1,1,1,1,1,1,1,1]];
 
 	refreshTime = 1000;
+	score = 0;
 	fillNewBlock(selectRandomBlock());
 }
+
+// A função abaixo desenha o placar
+
+function drawScore() {
+
+	ctx.beginPath();
+	ctx.fillStyle = 'black';
+	ctx.font = "1px Lucida Console";
+	ctx.fillText(score , 0.1, 1);
+	ctx.closePath();
+
+}
+
 
 // A função abaixo desenha o bloco que está vindo 
 // com base na sua posição (x,y).
@@ -325,6 +342,7 @@ function isClear(side) {
 // Se sim, ela remove aquela linha e adiciona uma nova no começo do tabuleiro. 
 
 function rowCheck () {
+	let rown = 0;
 	for (var i = 0; i < board.length-1; i++)
 		for (var j = 0; j < board[0].length; j++) {
 			if (board[i][j] == 0)
@@ -333,8 +351,10 @@ function rowCheck () {
 				if (j == 11) {
 					board.splice(i, 1);
 					board.unshift([1,0,0,0,0,0,0,0,0,0,0,1]);
+					rown++;
 				}
 		}
+	score += 10*rown*rown;
 }
 
 // A função abaixo é ativada somente a cada refreshTime, e somente se o bloco
@@ -366,6 +386,7 @@ function draw() {
 	rowCheck();
 	drawBoard();
 	drawBlock();
+	drawScore();
 	if (timeNow - timeLast > refreshTime) { // Move o bloco se o tempo de atualizar for atingido
 		if (isClear('down'))
 			newBlock.y += newBlock.dy;
