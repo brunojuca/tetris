@@ -5,6 +5,7 @@ body {
 	height: 100% - 10px;
   	width: 100% - 10px;
   	overflow: auto;
+        touch-action: none;
 }
 
 canvas {
@@ -13,4 +14,5 @@ canvas {
 	position: relative;
 	background-color: #dddddd;
 	margin: auto;
+        touch-action: none;
 }
