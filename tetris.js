@@ -61,7 +61,7 @@ const blockZ = {
 const blockJ = {
 	shape: [[0,5,0],
 		    [0,5,0],
-	        [0,5,5]],
+	        [5,5,0]],
 	color: 'blue',
 	size: 3
 }
@@ -69,14 +69,14 @@ const blockJ = {
 const blockL = {
 	shape: [[0,6,0],
 		    [0,6,0],
-	        [6,6,0]],
+	        [0,6,6]],
 	color: 'orange',
 	size: 3
 }
 
 const blockI = {
-	shape: [[7,7,7,7],
-		    [0,0,0,0],
+	shape: [[0,0,0,0],
+		    [7,7,7,7],
 	        [0,0,0,0],
 	        [0,0,0,0]],
 	color: 'cyan',
@@ -389,19 +389,30 @@ document.addEventListener('keydown', function(event) {
 // eu imortei de um repositório no github, mas ainda precisei
 // fazer algumas adaptações.
 
-let touchstartX = 0;
-let touchstartY = 0;
-let touchendX = 0;
-let touchendY = 0;
+let touchstartX = null;
+let touchstartY = null;
+let touchendX = null;
+let touchendY = null;
+let newtouchmoveX = null;
+let newtouchmoveY = null;
+let oldtouchmoveX = null;
+
 
 document.addEventListener('touchmove', function(event) {
 	event.preventDefault();
+	newtouchmoveX = event.changedTouches[0].screenX;
+	newtouchmoveY = event.changedTouches[0].screenY;
+	touchendY = null;
+	handleGesture();
 }, false, { passive: false });
 
 document.addEventListener('touchstart', function(event) {
 	event.preventDefault();
     touchstartX = event.changedTouches[0].screenX;
     touchstartY = event.changedTouches[0].screenY;
+    oldtouchmoveX = touchstartX;
+    touchendY = null;
+
 }, false, { passive: false });
 
 document.addEventListener('touchend', function(event) {
@@ -412,23 +423,28 @@ document.addEventListener('touchend', function(event) {
 }, false, { passive: false }); 
 
 function handleGesture() {
-    if (touchendX < touchstartX && (Math.abs(touchstartX - touchendX)) > (Math.abs(touchstartY - touchendY))) {
+
+	if (touchendY === touchstartY) {
+       updateBlock(38); // Toque
+       touchstartY = null;
+       touchendY = 0;
+    }
+
+    else if (newtouchmoveX+50 < oldtouchmoveX &&  (Math.abs(touchstartX - newtouchmoveX)) > (Math.abs(touchstartY - newtouchmoveY))) {
+        oldtouchmoveX = newtouchmoveX;
         updateBlock(37); // Esquerda
     }
     
-    if (touchendX > touchstartX && (Math.abs(touchstartX - touchendX)) > (Math.abs(touchstartY - touchendY))) {
+    else if (newtouchmoveX-50 > oldtouchmoveX && (Math.abs(touchstartX - newtouchmoveX)) > (Math.abs(touchstartY - newtouchmoveY))) {
+        oldtouchmoveX = newtouchmoveX;
         updateBlock(39); // Direita
     }
     
-    if (touchendY < touchstartY && (Math.abs(touchstartX - touchendX)) < (Math.abs(touchstartY - touchendY))) {
+    else if (touchendY < touchstartY && (Math.abs(touchstartX - touchendX)) < (Math.abs(touchstartY - touchendY))) {
         console.log('Swiped up'); // Cima
     }
     
-    if (touchendY > touchstartY && (Math.abs(touchstartX - touchendX)) < (Math.abs(touchstartY - touchendY))) {
+    else if (touchendY > touchstartY && (Math.abs(touchstartX - touchendX)) < (Math.abs(touchstartY - touchendY))) {
        updateBlock(32); // Baixo
-    }
-    
-    if (touchendY === touchstartY) {
-       updateBlock(38); // Toque
     }
 }
