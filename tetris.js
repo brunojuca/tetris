@@ -205,7 +205,7 @@ function drawScore() {
 
 	ctx.beginPath();
 	ctx.fillStyle = 'grey';
-	ctx.font = "0.7px Arial";
+	ctx.font = "0.7px Courier";
 	ctx.fillText("Score: " + score , 0.1, 0.7);
 	ctx.fillText("Level: " + level , 0.1, 1.6);
 	ctx.closePath();
@@ -390,12 +390,11 @@ function rowCheck () {
 					board.unshift([1,0,0,0,0,0,0,0,0,0,0,1]);
 					rown++;
 					linesCleared++;
+					if (linesCleared == 10*level)
+						level++;
 				}
 		}
 	score += 10*rown*rown*level;
-	if (linesCleared == 10*level) {
-		level++;
-	}
 }
 
 // A função abaixo é ativada somente a cada refreshTime, e somente se o bloco
