@@ -23,9 +23,13 @@ var bs = 0.03; //border size.
 var bc = '#dddddd' //border color.
 
 var score = 0;
-var pointValue = 10; 
+var pointValue = 10;
+var level = 1;
+var refreshTime = 1000;
+var inicialRefreshTime = 1000;
+var linesCleared = 0;
 
-var timeLast = Date.now(), timeNow, refreshTime = 1000; // Controle do tempo de atualização (ms).
+var timeLast = Date.now(), timeNow; // Controle do tempo de atualização (ms).
 
 var board;
 
@@ -97,6 +101,17 @@ var newBlock = {
 	rightClear: true
 }
 
+var nextBlock = {
+	shape: [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]], // Por não conseguir criar um array com
+	shadow: [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],// tamanho a se definir depois, criei dessa
+	color: '',										  // forma e usei o "size" para passar o
+	x:4,           									  // tamanho de cada bloco.
+	y:0,
+	dy: 1,
+	size: 0,
+	rightClear: true
+}
+
 // A função a seguir seleciona e retorna "aleatoriamente" um bloco
 // para ser usado na função fillNewBlock.
 
@@ -137,18 +152,18 @@ function selectRandomBlock() {
 // referente ao bloco que está vindo. Provavelmente existe uma
 // forma mais fácil de fazer esse processo, mas assim funcionou.
 
-function fillNewBlock(blockType) {
+function fillNewBlock(blockType, blockWanted) {
 
 	for (var i = 0; i < blockType.shape.length; i++)
 		for (var j = 0; j < blockType.shape.length; j++) {
-			newBlock.shape[i][j] = blockType.shape[i][j];
-			newBlock.shadow[i][j] = blockType.shape[i][j];
+			blockWanted.shape[i][j] = blockType.shape[i][j];
+			blockWanted.shadow[i][j] = blockType.shape[i][j];
 		}
-	newBlock.color = blockType.color;
-	newBlock.size = blockType.size;
-	newBlock.x = 4;
-	newBlock.y = 0;
-	newBlock.rightClear = true;
+	blockWanted.color = blockType.color;
+	blockWanted.size = blockType.size;
+	blockWanted.x = 4;
+	blockWanted.y = 0;
+	blockWanted.rightClear = true;
 }
 
 // A função a seguir (re)inicia o jogo.
@@ -177,9 +192,11 @@ function restart() {
 				[1,0,0,0,0,0,0,0,0,0,0,1],
 				[1,1,1,1,1,1,1,1,1,1,1,1]];
 
-	refreshTime = 1000;
+	refreshTime = inicialRefreshTime;
 	score = 0;
-	fillNewBlock(selectRandomBlock());
+	level = 1;
+	fillNewBlock(selectRandomBlock(), newBlock);
+	fillNewBlock(selectRandomBlock(), nextBlock);
 }
 
 // A função abaixo desenha o placar
@@ -187,11 +204,32 @@ function restart() {
 function drawScore() {
 
 	ctx.beginPath();
-	ctx.fillStyle = 'black';
-	ctx.font = "1px Lucida Console";
-	ctx.fillText(score , 0.1, 1);
+	ctx.fillStyle = 'grey';
+	ctx.font = "0.7px Lucida Console";
+	ctx.fillText("Score: " + score , 0.1, 0.7);
+	ctx.fillText("Level: " + level , 0.1, 1.6);
 	ctx.closePath();
 
+}
+
+function drawNextBlock() { // Copiada de drawBlock. Alterar para função única depois.
+	ctx.beginPath();
+
+	for (var i = 0; i < nextBlock.size; i++) {
+		for (var j = 0; j < nextBlock.size; j++) {
+			if (nextBlock.shape[i][j] != 0) {
+				ctx.fillStyle = nextBlock.color;
+				ctx.fillRect(8.5+j*0.4, 0.3+i*0.4, 0.4, 0.4);
+
+				ctx.fillStyle = bc; // Desenha a borda dos blocos.
+				ctx.fillRect(8.5+j*0.4, 0.3+i*0.4, bs, 0.4);
+				ctx.fillRect(8.5+j*0.4, 0.3+i*0.4, 0.4, bs);
+				ctx.fillRect(8.5+(j+1-bs)*0.4, 0.3+i*0.4, bs, 0.4);
+				ctx.fillRect(8.5+j*0.4, 0.3+(i+1-bs)*0.4, 0.4, bs);
+			}
+		}
+	}
+	ctx.closePath();
 }
 
 
@@ -216,7 +254,6 @@ function drawBlock() {
 		}
 	}
 	ctx.closePath();
-
 }
 
 // A função a seguir desenha o tabuleiro. Por utilizar uma camada externa
@@ -352,9 +389,13 @@ function rowCheck () {
 					board.splice(i, 1);
 					board.unshift([1,0,0,0,0,0,0,0,0,0,0,1]);
 					rown++;
+					linesCleared++;
 				}
 		}
-	score += 10*rown*rown;
+	score += 10*rown*rown*level;
+	if (linesCleared == 10*level) {
+		level++;
+	}
 }
 
 // A função abaixo é ativada somente a cada refreshTime, e somente se o bloco
@@ -369,8 +410,10 @@ function update() {
 			for (var j = 0; j < newBlock.size; j++)
 					if (newBlock.shape[i][j] != 0)
 						board[i+newBlock.y][j+newBlock.x+1] = newBlock.shape[i][j];
-		refreshTime = 1000;
-		fillNewBlock(selectRandomBlock());
+		if (refreshTime > 100)
+			refreshTime = inicialRefreshTime-(level*100);
+		fillNewBlock(nextBlock, newBlock);
+		fillNewBlock(selectRandomBlock(), nextBlock);
 	}
 	else 
 		restart();	
@@ -386,6 +429,7 @@ function draw() {
 	rowCheck();
 	drawBoard();
 	drawBlock();
+	drawNextBlock();
 	drawScore();
 	if (timeNow - timeLast > refreshTime) { // Move o bloco se o tempo de atualizar for atingido
 		if (isClear('down'))
