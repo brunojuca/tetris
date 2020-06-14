@@ -205,7 +205,7 @@ function drawScore() {
 
 	ctx.beginPath();
 	ctx.fillStyle = 'grey';
-	ctx.font = "0.7px Lucida Console";
+	ctx.font = "0.7px Arial";
 	ctx.fillText("Score: " + score , 0.1, 0.7);
 	ctx.fillText("Level: " + level , 0.1, 1.6);
 	ctx.closePath();
