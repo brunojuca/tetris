@@ -219,13 +219,13 @@ function drawNextBlock() { // Copiada de drawBlock. Alterar para função única
 		for (var j = 0; j < nextBlock.size; j++) {
 			if (nextBlock.shape[i][j] != 0) {
 				ctx.fillStyle = nextBlock.color;
-				ctx.fillRect(8.5+j*0.4, 0.3+i*0.4, 0.4, 0.4);
+				ctx.fillRect(8+j*0.4, 0.3+i*0.4, 0.4, 0.4);
 
 				ctx.fillStyle = bc; // Desenha a borda dos blocos.
-				ctx.fillRect(8.5+j*0.4, 0.3+i*0.4, bs, 0.4);
-				ctx.fillRect(8.5+j*0.4, 0.3+i*0.4, 0.4, bs);
-				ctx.fillRect(8.5+(j+1-bs)*0.4, 0.3+i*0.4, bs, 0.4);
-				ctx.fillRect(8.5+j*0.4, 0.3+(i+1-bs)*0.4, 0.4, bs);
+				ctx.fillRect(8+j*0.4, 0.3+i*0.4, bs, 0.4);
+				ctx.fillRect(8+j*0.4, 0.3+i*0.4, 0.4, bs);
+				ctx.fillRect(8+(j+1-bs)*0.4, 0.3+i*0.4, bs, 0.4);
+				ctx.fillRect(8+j*0.4, 0.3+(i+1-bs)*0.4, 0.4, bs);
 			}
 		}
 	}
@@ -410,10 +410,10 @@ function update() {
 			for (var j = 0; j < newBlock.size; j++)
 					if (newBlock.shape[i][j] != 0)
 						board[i+newBlock.y][j+newBlock.x+1] = newBlock.shape[i][j];
-		if (refreshTime > 100)
-			refreshTime = inicialRefreshTime-(level*100);
-		fillNewBlock(nextBlock, newBlock);
-		fillNewBlock(selectRandomBlock(), nextBlock);
+	if (refreshTime != 100)
+		refreshTime = inicialRefreshTime-(level*100);
+	fillNewBlock(nextBlock, newBlock);
+	fillNewBlock(selectRandomBlock(), nextBlock);
 	}
 	else 
 		restart();	
