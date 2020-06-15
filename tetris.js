@@ -415,8 +415,10 @@ function update() {
 	fillNewBlock(nextBlock, newBlock);
 	fillNewBlock(selectRandomBlock(), nextBlock);
 	}
-	else 
-		restart();	
+	else {
+                alert('Your Score is ' + score);
+		restart();
+        }	
 }
 
 //Abaixo inicia-se o processo geral de desenhar
