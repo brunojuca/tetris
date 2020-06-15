@@ -195,6 +195,7 @@ function restart() {
 	refreshTime = inicialRefreshTime;
 	score = 0;
 	level = 1;
+        linesCleared = 0;
 	fillNewBlock(selectRandomBlock(), newBlock);
 	fillNewBlock(selectRandomBlock(), nextBlock);
 }
